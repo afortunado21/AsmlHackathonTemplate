@@ -25,7 +25,7 @@ const int ExampleMessageTask::LEDMATRIX_HEIGHT = 7;
 const int ExampleMessageTask::LEDMATRIX_SEGMENTS = 4;
 const int ExampleMessageTask::LEDMATRIX_INTENSITY = 5;
 const int ExampleMessageTask::LEDMATRIX_CS_PIN = 16;
-const unsigned long ExampleMessageTask::POLL_DELAY_MS = 2000;
+const unsigned long ExampleMessageTask::POLL_DELAY_MS = 500;
 
 //! Initializes the LED Matrix display.
 ExampleMessageTask::ExampleMessageTask(Facilities::MeshNetwork &mesh) : Task(POLL_DELAY_MS, TASK_FOREVER, std::bind(&ExampleMessageTask::execute, this)),
@@ -53,44 +53,62 @@ ExampleMessageTask::ExampleMessageTask(Facilities::MeshNetwork &mesh) : Task(POL
 //! Update display
 void ExampleMessageTask::execute()
 {
-   if (m_mesh.getMyNodeId() == 978880587)
+   
+   MY_DEBUG_PRINTLN("CHECKING NODE IDS");
+   node_ids = m_mesh.nodes_present;
+
+   for (uint32_t node : node_ids)
    {
-      vector<uint32_t> slave_ids = {978879811, 978879937, 3256120749};
-      for (int i = 0; i < 3; i++)
-      {
-         String msg;
-         msg += "PRINT ";
-         msg += slave_ids[i];
-         msg += ' ';
-         for (int j = 0; j < 32; j++)
-         {
-            for (int k = 0; k < 8; k++)
-            {
-               msg += img[j][8 * i + k];
-               msg += ' ';
-            }
-         }
-         m_mesh.sendBroadcast(msg);
-      }
-      // Draw own image.
-      m_lmd.clear();
-      for (int i = 0; i <= LEDMATRIX_WIDTH; i++)
-      {
-         for (int j = 0; j <= LEDMATRIX_HEIGHT; j++)
-         {
-            std::pair<int, int> mapped_coordinates = map_single(i, j);
-            m_lmd.setPixel(mapped_coordinates.first,
-                           mapped_coordinates.second, img[i][3 * 8 + j]);
-         }
-      }
-      m_lmd.display();
+      MY_DEBUG_PRINTLN(node);
    }
+   uint32_t my_id = m_mesh.getMyNodeId();
+
+   MY_DEBUG_PRINTLN("CHECKED NODE IDS");
+   MY_DEBUG_PRINTLN("I AM:");
+   MY_DEBUG_PRINTLN(my_id);
+   if (node_ids.size() > 0 && node_ids[0] < my_id)
+   {
+      MY_DEBUG_PRINTLN("NOT MASTER");
+      return;
+   }
+
+   MY_DEBUG_PRINTLN("WE ARE MASTER");
+   for (int i = 0; i < node_ids.size(); i++)
+   {
+      String msg;
+      msg += "PRINT ";
+      msg += node_ids[i];
+      msg += ' ';
+      for (int j = 0; j < 32; j++)
+      {
+         for (int k = 0; k < 8; k++)
+         {
+            msg += img[j][8 * (i+1) + k];
+            msg += ' ';
+         }
+      }
+      m_mesh.sendBroadcast(msg);
+   }
+   MY_DEBUG_PRINTLN("PRINTED MASTER STUFF");
+   
+   // Draw own image.
+   m_lmd.clear();
+   for (int i = 0; i <= LEDMATRIX_WIDTH; i++)
+   {
+      for (int j = 0; j <= LEDMATRIX_HEIGHT; j++)
+      {
+         std::pair<int, int> mapped_coordinates = map_single(i, j);
+         m_lmd.setPixel(mapped_coordinates.first,
+                        mapped_coordinates.second, img[i][j]);
+      }
+   }
+   m_lmd.display();
 }
 
 void ExampleMessageTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, String &msg)
 {
-   MY_DEBUG_PRINTLN("Received data in ExampleMessageTask:");
-   MY_DEBUG_PRINTLN(msg.c_str());
+//   MY_DEBUG_PRINTLN("Received data to print");
+  // MY_DEBUG_PRINTLN(msg.c_str());
 
    if (msg.indexOf("PRINT ") == 0)
    {
@@ -109,6 +127,7 @@ void ExampleMessageTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
                std::pair<int, int> mapped_coordinates = map_single(i, j);
                m_lmd.setPixel(mapped_coordinates.first,
                               mapped_coordinates.second, value);
+            
             }
          }
          m_lmd.display();

@@ -27,7 +27,6 @@ public:
 	MeshNetwork(const MeshNetwork& other) = delete;
 	MeshNetwork(MeshNetwork&& other) = delete;
 	MeshNetwork& operator=(const MeshNetwork& other) = delete;
-    bool master_node = false;
     int num_nodes = 0;
    void update();
    void initialize(const __FlashStringHelper *prefix, const __FlashStringHelper *password, Scheduler& taskScheduler);
@@ -35,7 +34,8 @@ public:
    void sendBroadcast(String& message);
    NodeId getMyNodeId();
    std::list<NodeId> getNodeList();
-
+   std::vector<NodeId> getSortedNodeVector();
+   std::vector<NodeId> nodes_present;
    void onReceive(receivedCallback_t receivedCallback);
     void onChangedConnections(changedConnectionsCallback_t onChangedConnections);
     void changedCb();

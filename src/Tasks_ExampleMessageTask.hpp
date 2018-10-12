@@ -48,6 +48,7 @@ private:
 
    int m_x;
    int img[32][32];
+   vector<Facilities::MeshNetwork::NodeId> node_ids;
 
    void receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg);
 

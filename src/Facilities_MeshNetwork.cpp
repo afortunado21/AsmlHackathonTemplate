@@ -43,7 +43,7 @@ void MeshNetwork::update()
 
 void MeshNetwork::sendBroadcast(String &message)
 {
-   MY_DEBUG_PRINT("Broadcasting message: "); MY_DEBUG_PRINTLN(message);
+//   MY_DEBUG_PRINT("Broadcasting message: "); MY_DEBUG_PRINTLN(message);
    m_mesh.sendBroadcast(message, false); // false: Do not include self.
 }
 
@@ -54,6 +54,12 @@ MeshNetwork::NodeId MeshNetwork::getMyNodeId()
 
 std::list<MeshNetwork::NodeId> MeshNetwork::getNodeList() {
     return m_mesh.getNodeList();
+}
+
+std::vector<MeshNetwork::NodeId> MeshNetwork::getSortedNodeVector() {
+    std::list<NodeId> node_list = getNodeList();
+    node_list.sort();
+    return std::vector<NodeId>(node_list.begin(), node_list.end());
 }
 
 void MeshNetwork::onReceive(receivedCallback_t receivedCallback)
@@ -70,10 +76,8 @@ void MeshNetwork::receivedCb(NodeId transmitterNodeId, String& msg)
 void MeshNetwork::changedCb()
 {
     MY_DEBUG_PRINTF("Connections Changed");
-    std::list<MeshNetwork::NodeId> nodes_present = MeshNetwork::getNodeList();
-    nodes_present.sort();
-    num_nodes = nodes_present.size();
-    if (nodes_present.front() == MeshNetwork::getMyNodeId() ) { master_node = true;}
+   MeshNetwork::nodes_present = MeshNetwork::getSortedNodeVector();
+   
 }
 
 } // namespace Facilities
