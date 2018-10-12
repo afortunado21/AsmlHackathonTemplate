@@ -56,7 +56,7 @@ void HttpServer::setup(const char* wifi_ssid, const char* wifi_passwd) {
     init_led_resource();
 
     if (init_wifi(wifi_ssid, wifi_passwd) == WL_CONNECTED) {
-        Serial.print("Connetted to ");
+        Serial.print("Connected to ");
         Serial.print(wifi_ssid);
         Serial.print("--- IP: ");
         Serial.println(WiFi.localIP());
