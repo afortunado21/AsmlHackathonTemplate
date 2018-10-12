@@ -14,6 +14,8 @@
 
 #include <functional>
 
+#include <Util.h>
+
 namespace Tasks {
 
 
@@ -41,7 +43,46 @@ ExampleDisplayTask::ExampleDisplayTask(Facilities::MeshNetwork& mesh) :
 void ExampleDisplayTask::execute()
 {
    m_lmd.clear();
-   m_lmd.setPixel(m_x, 0, true);
+   const int grid[32][8] = {
+       1, 1, 1, 1, 1, 1, 1, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 0, 0, 0, 0, 0, 0, 1,
+       1, 1, 1, 1, 1, 1, 1, 1,
+   };
+   for (int i = 0; i < 32; i++) {
+       for (int j = 0; j < 8; j++) {
+           std::pair<int, int> mapped_coordinates = map_single(i, j);
+           m_lmd.setPixel(mapped_coordinates.first, mapped_coordinates.second, grid[i][j]);
+       }
+   }
    m_lmd.display();
 }
 
