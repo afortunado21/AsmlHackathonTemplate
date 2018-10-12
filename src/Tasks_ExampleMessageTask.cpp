@@ -9,7 +9,7 @@
 
 #include "Debug.hpp"
 #include "Facilities_MeshNetwork.hpp"
-#include "Util.h"
+// #include "Util.hpp"
 
 #include <LEDMatrixDriver.hpp>
 
@@ -97,9 +97,9 @@ void ExampleMessageTask::execute()
    {
       for (int j = 0; j <= LEDMATRIX_HEIGHT; j++)
       {
-         std::pair<int, int> mapped_coordinates = map_single(i, j);
-         m_lmd.setPixel(mapped_coordinates.first,
-                        mapped_coordinates.second, img[i][j]);
+         // std::pair<int, int> mapped_coordinates = map_single(i, j);
+         // m_lmd.setPixel(mapped_coordinates.first,
+        //              mapped_coordinates.second, img[i][j]);
       }
    }
    m_lmd.display();
@@ -108,12 +108,13 @@ void ExampleMessageTask::execute()
 void ExampleMessageTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, String &msg)
 {
 //   MY_DEBUG_PRINTLN("Received data to print");
-  // MY_DEBUG_PRINTLN(msg.c_str());
+  MY_DEBUG_PRINTLN(msg.c_str());
 
    if (msg.indexOf("PRINT ") == 0)
    {
       msg = msg.substring(6);
-      uint32_t id = read_uint32_t(&msg);
+      uint32_t id = 0;
+      // uint32_t id = read_uint32_t(&msg);
       if (id == m_mesh.getMyNodeId())
       {
          m_lmd.clear();
@@ -123,10 +124,11 @@ void ExampleMessageTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
          {
             for (int j = 0; j <= LEDMATRIX_HEIGHT; j++)
             {
-               int value = read_uint32_t(&msg);
-               std::pair<int, int> mapped_coordinates = map_single(i, j);
-               m_lmd.setPixel(mapped_coordinates.first,
-                              mapped_coordinates.second, value);
+               int value = 0;
+               // int value = read_uint32_t(&msg);
+               // std::pair<int, int> mapped_coordinates = map_single(i, j);
+               // m_lmd.setPixel(mapped_coordinates.first,
+               //                mapped_coordinates.second, value);
             
             }
          }
