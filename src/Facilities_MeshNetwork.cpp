@@ -12,6 +12,7 @@
 #include "Debug.hpp"
 #include "painlessMesh.h"
 
+AsyncWebServer server(80);
 
 namespace Facilities {
 
@@ -32,13 +33,27 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
 {
    // Set debug messages before init() so that you can see startup messages.
    m_mesh.setDebugMsgTypes( ERROR | STARTUP );  // To enable all: ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE
-   m_mesh.init( prefix, password, &taskScheduler, MeshNetwork::PORT );
+
+    m_mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );  // set before init() so that you can see startup messages
+    m_mesh.init( prefix, password, PORT, WIFI_AP_STA, 6 );
+    m_mesh.stationManual(STATION_SSID, STATION_PASSWORD);
+    m_mesh.setHostname(HOSTNAME);
+    IPAddress myAPIP(0,0,0,0);
+    myAPIP = IPAddress(m_mesh.getAPIP());
+
+    Serial.println("My AP IP is " + myAPIP.toString());
+    //Async webserver
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+        
+    });
+    server.begin();
 }
 
 //! Update mesh; forward call to painlessMesh.
 void MeshNetwork::update()
 {
-   m_mesh.update();
+    m_mesh.update();
+    MY_DEBUG_PRINTLN(m_mesh.getStationIP().toString());
 }
 
 void MeshNetwork::sendBroadcast(String &message)

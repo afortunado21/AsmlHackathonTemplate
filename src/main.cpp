@@ -7,11 +7,11 @@
 #include "Tasks_ExampleDisplayTask.hpp"
 #include "Tasks_ExampleMessageTask.hpp"
 
+
 // Translation unit local variables
 namespace {
 
 Scheduler                  taskScheduler;
-
 Facilities::MeshNetwork    meshNetwork;
 Tasks::ExampleTransmitTask exampleTransmitTask(meshNetwork);
 Tasks::ExampleDisplayTask  exampleDisplayTask(meshNetwork);
@@ -23,8 +23,8 @@ void setup()
 {
    MY_DEBUG_BEGIN(115200);
 
-   // Create MeshNetwork
-   meshNetwork.initialize(F("Yellow-Team"), F("DigitalGold"), taskScheduler);
+    // Create MeshNetwork
+    meshNetwork.initialize(F("Yellow-Team13"), F("DigitalGold"), taskScheduler);
 
    // Create and add tasks.
    taskScheduler.addTask( exampleMessageTask );

@@ -11,6 +11,15 @@
 
 #include "painlessMesh.h"
 #include <functional>
+#include "IPAddress.h"
+#include "Hash.h"
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
+
+#define   STATION_SSID     "ASML Digital Gold Hackathon"
+#define   STATION_PASSWORD "DigitalGold"
+#define HOSTNAME "HTTP_BRIDGE"
 
 namespace Facilities {
 
@@ -40,10 +49,11 @@ public:
     void onChangedConnections(changedConnectionsCallback_t onChangedConnections);
     void changedCb();
 
-private:
-   static const uint16_t PORT;
 
-   painlessMesh       m_mesh;
+private:   
+
+    painlessMesh       m_mesh;
+   static const uint16_t PORT;
 
    void receivedCb(NodeId transmitterNodeId, String& msg);
 
