@@ -12,6 +12,8 @@
 #include "Debug.hpp"
 #include "painlessMesh.h"
 #include <DNSServer.h>
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
 
 #define DNS_PORT 53
 
@@ -51,10 +53,13 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
     IPAddress myAPIP(0,0,0,0);
     myAPIP = IPAddress(m_mesh.getAPIP());
 
-    Serial.println("My AP IP is " + myAPIP.toString());
-    //Async webserver
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-            request->send(200, "text/html", "<form>Text to Broadcast<br><input type='text' name='BROADCAST'><br><br><input type='submit' value='Submit'></form>");
+    server.on("/", HTTP_GET, [&](AsyncWebServerRequest *request){
+        request->send(200, "text/html", "<form>Text to Broadcast<br><input type='text' name='BROADCAST'><br><br><input type='submit' value='Submit'></form>");
+        if (request->hasArg("BROADCAST")){
+            String msg = request->arg("BROADCAST");
+            MY_DEBUG_PRINTLN("arg: " + msg);
+            // m_mesh.sendBroadcast("REQST " + msg);
+        }
     });
     server.begin();
 }
