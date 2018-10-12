@@ -23,7 +23,7 @@ MeshNetwork::MeshNetwork()
 {
    m_mesh.onReceive(std::bind(&MeshNetwork::receivedCb, this, std::placeholders::_1, std::placeholders::_2));
    //m_mesh.onNewConnection(...);
-   //m_mesh.onChangedConnections(...);
+  m_mesh.onChangedConnections(std::bind(&MeshNetwork::changedCb,this));
    //m_mesh.onNodeTimeAdjusted(...);
 }
 
@@ -52,6 +52,10 @@ MeshNetwork::NodeId MeshNetwork::getMyNodeId()
    return m_mesh.getNodeId();
 }
 
+std::list<MeshNetwork::NodeId> MeshNetwork::getNodeList() {
+    return m_mesh.getNodeList();
+}
+
 void MeshNetwork::onReceive(receivedCallback_t receivedCallback)
 {
    m_mesh.onReceive(receivedCallback);
@@ -62,5 +66,14 @@ void MeshNetwork::receivedCb(NodeId transmitterNodeId, String& msg)
    MY_DEBUG_PRINTF("Data received from node: %u; msg: %s\n", transmitterNodeId, msg.c_str());
 }
 
+
+void MeshNetwork::changedCb()
+{
+    MY_DEBUG_PRINTF("Connections Changed");
+    std::list<MeshNetwork::NodeId> nodes_present = MeshNetwork::getNodeList();
+    nodes_present.sort();
+    num_nodes = nodes_present.size();
+    if (nodes_present.front() == MeshNetwork::getMyNodeId() ) { master_node = true;}
+}
 
 } // namespace Facilities
