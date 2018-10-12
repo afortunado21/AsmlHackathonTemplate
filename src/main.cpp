@@ -5,6 +5,7 @@
 #include "Facilities_MeshNetwork.hpp"
 #include "Tasks_ExampleTransmitTask.hpp"
 #include "Tasks_ExampleDisplayTask.hpp"
+#include "Tasks_ExampleMessageTask.hpp"
 
 // Translation unit local variables
 namespace {
@@ -14,6 +15,7 @@ Scheduler                  taskScheduler;
 Facilities::MeshNetwork    meshNetwork;
 Tasks::ExampleTransmitTask exampleTransmitTask(meshNetwork);
 Tasks::ExampleDisplayTask  exampleDisplayTask(meshNetwork);
+Tasks::ExampleMessageTask  exampleMessageTask(meshNetwork);
 }
 
 //! Called once at board startup.
@@ -25,13 +27,11 @@ void setup()
    meshNetwork.initialize(F("Yellow-Team"), F("DigitalGold"), taskScheduler);
 
    // Create and add tasks.
-   taskScheduler.addTask( exampleTransmitTask );
-   taskScheduler.addTask( exampleDisplayTask );
-   exampleTransmitTask.enable();
-   exampleDisplayTask.enable();
-
+   taskScheduler.addTask( exampleMessageTask );
+   exampleMessageTask.enable();
 
    MY_DEBUG_PRINTLN(F("Setup completed"));
+   MY_DEBUG_PRINTLN(meshNetwork.getMyNodeId());
 }
 
 //! Called repeatedly after setup().

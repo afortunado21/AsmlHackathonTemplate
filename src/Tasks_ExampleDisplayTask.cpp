@@ -14,7 +14,7 @@
 
 #include <functional>
 
-#include <Util.h>
+// #include <Util.h>
 
 namespace Tasks {
 
@@ -79,8 +79,8 @@ void ExampleDisplayTask::execute()
    };
    for (int i = 0; i < 32; i++) {
        for (int j = 0; j < 8; j++) {
-           std::pair<int, int> mapped_coordinates = map_single(i, j);
-           m_lmd.setPixel(mapped_coordinates.first, mapped_coordinates.second, grid[i][j]);
+          // std::pair<int, int> mapped_coordinates = map_single(i, j);
+          // m_lmd.setPixel(mapped_coordinates.first, mapped_coordinates.second, grid[i][j]);
        }
    }
    m_lmd.display();
