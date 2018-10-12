@@ -53,6 +53,7 @@ public:
 private:   
 
     painlessMesh       m_mesh;
+    String curIp;
    static const uint16_t PORT;
 
    void receivedCb(NodeId transmitterNodeId, String& msg);

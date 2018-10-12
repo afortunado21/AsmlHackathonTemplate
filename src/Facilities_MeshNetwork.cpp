@@ -11,8 +11,12 @@
 
 #include "Debug.hpp"
 #include "painlessMesh.h"
+#include <DNSServer.h>
+
+#define DNS_PORT 53
 
 AsyncWebServer server(80);
+DNSServer dnsserver;
 
 namespace Facilities {
 
@@ -22,6 +26,7 @@ const uint16_t MeshNetwork::PORT = 5555;
 //! \note Does not construct and initialize in one go to be able to initialize after serial debug port has been opened.
 MeshNetwork::MeshNetwork()
 {
+    curIp = "0.0.0.0";
    m_mesh.onReceive(std::bind(&MeshNetwork::receivedCb, this, std::placeholders::_1, std::placeholders::_2));
    //m_mesh.onNewConnection(...);
   m_mesh.onChangedConnections(std::bind(&MeshNetwork::changedCb,this));
@@ -31,6 +36,11 @@ MeshNetwork::MeshNetwork()
 // Initialize mesh network.
 void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStringHelper *password, Scheduler& taskScheduler)
 {
+
+    
+    dnsserver.setTTL(300);
+    dnsserver.setErrorReplyCode(DNSReplyCode::ServerFailure);
+    
    // Set debug messages before init() so that you can see startup messages.
    m_mesh.setDebugMsgTypes( ERROR | STARTUP );  // To enable all: ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE
 
@@ -44,7 +54,7 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
     Serial.println("My AP IP is " + myAPIP.toString());
     //Async webserver
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-        
+            request->send(200, "text/html", "<form>Text to Broadcast<br><input type='text' name='BROADCAST'><br><br><input type='submit' value='Submit'></form>");
     });
     server.begin();
 }
@@ -53,7 +63,16 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
 void MeshNetwork::update()
 {
     m_mesh.update();
-    MY_DEBUG_PRINTLN(m_mesh.getStationIP().toString());
+    IPAddress newIp = m_mesh.getStationIP();
+    String strIp = newIp.toString();
+    if (strIp != curIp) {
+        MY_DEBUG_PRINTLN(strIp);
+        curIp = strIp;
+        if (curIp != F("0.0.0.0")) {
+            dnsserver.stop();
+        }
+        dnsserver.start(DNS_PORT, "www.webserver.com", newIp);
+    }
 }
 
 void MeshNetwork::sendBroadcast(String &message)
