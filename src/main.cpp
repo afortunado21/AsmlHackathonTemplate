@@ -7,8 +7,6 @@
 #include "Tasks_ExampleDisplayTask.hpp"
 #include "Tasks_ExampleMessageTask.hpp"
 #include "Tasks_Special.hpp"
-#include "HttpServer.hpp"
-
 
 // Translation unit local variables
 namespace {
