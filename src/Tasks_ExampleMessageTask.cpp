@@ -9,7 +9,7 @@
 
 #include "Debug.hpp"
 #include "Facilities_MeshNetwork.hpp"
-#include "Util.h"
+//#include "Util.h"
 
 #include <LEDMatrixDriver.hpp>
 
@@ -41,6 +41,7 @@ ExampleMessageTask::ExampleMessageTask(Facilities::MeshNetwork &mesh) : Task(POL
 
 //! Update 
 void ExampleMessageTask::draw_img(int img[32][32], uint8_t intensity) {
+    /*
   m_lmd.setIntensity(intensity);
   MY_DEBUG_PRINTLN("CHECKING NODE IDS");
    node_ids = m_mesh.nodes_present;
@@ -114,7 +115,7 @@ void ExampleMessageTask::draw_img(int img[32][32], uint8_t intensity) {
       }
    }
    m_lmd.display();
-
+*/
 }
 
 
@@ -132,7 +133,7 @@ void ExampleMessageTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
 {
 //   MY_DEBUG_PRINTLN("Received data to print");
   // MY_DEBUG_PRINTLN(msg.c_str());
-
+/*
    if (msg.indexOf("PRINT ") == 0)
    {
       msg = msg.substring(6);
@@ -160,6 +161,7 @@ void ExampleMessageTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
    {
       m_x = 0;
    }
+   */
 }
 
 } // namespace Tasks

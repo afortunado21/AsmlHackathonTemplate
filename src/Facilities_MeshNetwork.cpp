@@ -13,6 +13,7 @@
 #include "painlessMesh.h"
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
+#include <stdio.h>
 
 AsyncWebServer server(80);
 
@@ -29,6 +30,16 @@ MeshNetwork::MeshNetwork()
    //m_mesh.onNewConnection(...);
   m_mesh.onChangedConnections(std::bind(&MeshNetwork::changedCb,this));
    //m_mesh.onNodeTimeAdjusted(...);
+}
+
+void MeshNetwork::parseShapeStr(String& str, byte ar[], int width)
+{
+    const char* s=str.c_str();
+    int i=0;
+    while(*s++) {
+        ar[i]=s[i]-'0';
+        i++;
+    }
 }
 
 // Initialize mesh network.
@@ -51,6 +62,51 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
             MY_DEBUG_PRINTLN("arg: " + msg);
             // m_mesh.sendBroadcast("REQST " + msg);
         }
+    });
+    server.on("/ACTIVE_NODE_COUNT", HTTP_GET, [&](AsyncWebServerRequest *request){
+	    unsigned int activeNodeCount=m_mesh.getNodeList().size();
+        char activeNodeCountStr[100];
+        sprintf(activeNodeCountStr, "%d", activeNodeCount);
+        request->send(200, "text/plain", activeNodeCountStr);
+	    MY_DEBUG_PRINTLN("Request: ACTIVE_NODE_COUNT");
+    });
+    server.on("/SHAPES", HTTP_GET, [&](AsyncWebServerRequest *request){
+        uint8_t imgA1[8*32];
+        uint8_t imgA2[16*32];
+        uint8_t imgA3[24*32];
+        uint8_t imgA4[32*32];
+
+        uint8_t imgB1[8*32];
+        uint8_t imgB2[16*32];
+        uint8_t imgB3[24*32];
+        uint8_t imgB4[32*32];
+
+	    String strA1 = request->arg("A1");
+        parseShapeStr(strA1, imgA1, 8*1);
+
+	    String strA2 = request->arg("A2");
+        parseShapeStr(strA2, imgA2, 8*2);
+
+	    String strA3 = request->arg("A3");
+        parseShapeStr(strA3, imgA3, 8*3);
+
+	    String strA4 = request->arg("A4");
+        parseShapeStr(strA4, imgA4, 8*4);
+
+	    String strB1 = request->arg("B1");
+        parseShapeStr(strB1, imgB1, 8*1);
+
+	    String strB2 = request->arg("B2");
+        parseShapeStr(strB2, imgB2, 8*2);
+
+	    String strB3 = request->arg("B3");
+        parseShapeStr(strB3, imgB3, 8*3);
+
+	    String strB4 = request->arg("B4");
+        parseShapeStr(strB4, imgB4, 8*4);
+
+        request->send(200, "text/plain", "Received");
+	    MY_DEBUG_PRINTLN("Request: SHAPES");
     });
     server.begin();
 }
