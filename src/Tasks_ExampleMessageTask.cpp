@@ -37,27 +37,6 @@ ExampleMessageTask::ExampleMessageTask(Facilities::MeshNetwork &mesh) : Task(POL
    m_lmd.setIntensity(LEDMATRIX_INTENSITY);
 
    m_mesh.onReceive(std::bind(&ExampleMessageTask::receivedCb, this, std::placeholders::_1, std::placeholders::_2));
-
-   
-  // set up test image
-  for(int i = 0; i < 32; ++i ) {
-    for(int j = 0; j < 32; ++j) {
-     image[i][j] = (i%3 ==0)?0:1;
-    }
-  }
-
-/*
-   // Draw image.
-   for (int i = 0; i < 32; i++)
-   {
-      for (int j = 0; j < 32; j++)
-      {
-         int x = 2 * i - 31;
-         int y = 2 * j - 31;
-         img[i][j] = (x * x + y * y <= 31 * 31 + 1);
-      }
-   }
-   */
 }
 
 //! Update 
@@ -108,9 +87,6 @@ void ExampleMessageTask::draw_img(int img[32][32], uint8_t intensity) {
    {
       String msg;
       msg += "PRINT ";
-      msg += ' ';
-      msg += intensity; 
-      msg += ' ';
       msg += node_ids[i];
       msg += ' ';
       for (int j = 0; j < 32; j++)
@@ -148,37 +124,7 @@ void ExampleMessageTask::execute()
  
   MY_DEBUG_PRINTLN("PRINTING TEST IMG");
 
-  for(int i = 0; i < 32; ++i ) {
-        for (int j = 0; j < 32; ++j) {
-            if( i%4 == 0 || i%4 == 1) {
-                bars[i][j] = 0;
-            } else {
-                bars[i][j] = 1;
-            }
-        }
-    }
-
-      for(int i = 0; i < 32; ++i ) {
-        for (int j = 0; j < 32; ++j) {
-            if( (j - 16) > 10 || (i - 10) > 10 ){
-                rectangle[i][j] = 1;
-            } else {
-                rectangle[i][j] = 0;
-            }
-        }
-    }
-
-      for(int i = 0; i < 32; ++i ) {
-        for (int j = 0; j < 32; ++j) {
-            if( i*i + j*j <200) {
-                circle[i][j] = 1;
-            } else {
-                circle[i][j] = 0;
-            }
-        }
-    }
-
-   draw_img(image,5);
+   draw_img(img,5);
    
 }
 
@@ -195,8 +141,6 @@ void ExampleMessageTask::receivedCb(Facilities::MeshNetwork::NodeId nodeId, Stri
       {
         
          m_lmd.clear();
-         int intensity = read_uint8_t(&msg);
-         m_lmd.setIntensity(intensity);
          for (int i = 0; i <= LEDMATRIX_WIDTH; i++)
          {
             for (int j = 0; j <= LEDMATRIX_HEIGHT; j++)
