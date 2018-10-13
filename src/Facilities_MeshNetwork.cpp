@@ -11,7 +11,10 @@
 
 #include "Debug.hpp"
 #include "painlessMesh.h"
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
 
+AsyncWebServer server(80);
 
 namespace Facilities {
 
@@ -21,6 +24,7 @@ const uint16_t MeshNetwork::PORT = 5555;
 //! \note Does not construct and initialize in one go to be able to initialize after serial debug port has been opened.
 MeshNetwork::MeshNetwork()
 {
+    curIp = "0.0.0.0";
    m_mesh.onReceive(std::bind(&MeshNetwork::receivedCb, this, std::placeholders::_1, std::placeholders::_2));
    //m_mesh.onNewConnection(...);
   m_mesh.onChangedConnections(std::bind(&MeshNetwork::changedCb,this));
@@ -32,13 +36,29 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
 {
    // Set debug messages before init() so that you can see startup messages.
    m_mesh.setDebugMsgTypes( ERROR | STARTUP );  // To enable all: ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE
-   m_mesh.init( prefix, password, &taskScheduler, MeshNetwork::PORT );
+
+    m_mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );  // set before init() so that you can see startup messages
+    m_mesh.init( prefix, password, PORT, WIFI_AP_STA, 6 );
+    m_mesh.stationManual(STATION_SSID, STATION_PASSWORD);
+    m_mesh.setHostname(HOSTNAME);
+    IPAddress myAPIP(0,0,0,0);
+    myAPIP = IPAddress(m_mesh.getAPIP());
+
+    server.on("/", HTTP_GET, [&](AsyncWebServerRequest *request){
+        request->send(200, "text/html", "<form>Text to Broadcast<br><input type='text' name='BROADCAST'><br><br><input type='submit' value='Submit'></form>");
+        if (request->hasArg("BROADCAST")){
+            String msg = request->arg("BROADCAST");
+            MY_DEBUG_PRINTLN("arg: " + msg);
+            // m_mesh.sendBroadcast("REQST " + msg);
+        }
+    });
+    server.begin();
 }
 
 //! Update mesh; forward call to painlessMesh.
 void MeshNetwork::update()
 {
-   m_mesh.update();
+    m_mesh.update();
 }
 
 void MeshNetwork::sendBroadcast(String &message)
