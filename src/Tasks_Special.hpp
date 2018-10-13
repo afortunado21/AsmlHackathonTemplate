@@ -9,8 +9,6 @@
 #ifndef __Tasks_Special__
 #define __Tasks_Special__
 
-#include "Facilities_MeshNetwork.hpp"
-
 #include <painlessMesh.h>
 #include <LEDMatrixDriver.hpp>
 
@@ -25,7 +23,7 @@ namespace Tasks {
 class Special : public Task
 {
 public:
-   explicit Special(Facilities::MeshNetwork& mesh);
+   explicit Special(painlessMesh& mesh);
    ~Special() {};
 
    // Disallow copy-ing
@@ -35,7 +33,6 @@ public:
 
    void execute();
 
-private:
    static const int LEDMATRIX_WIDTH;
    static const int LEDMATRIX_HEIGHT;
    static const int LEDMATRIX_SEGMENTS;
@@ -43,16 +40,16 @@ private:
    static const int LEDMATRIX_CS_PIN;
    static const unsigned long POLL_DELAY_MS;
 
-   Facilities::MeshNetwork& m_mesh;
+   painlessMesh& m_mesh;
    LEDMatrixDriver m_lmd;
 
    int m_x;
    int img[32][32];
-   vector<Facilities::MeshNetwork::NodeId> node_ids;
+   vector<uint32_t> node_ids;
    int tick = 0;
 
-   void receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg);
-
+   void receivedCb(uint32_t nodeId, String& msg);
+   void changedCb();
 
 };
 
