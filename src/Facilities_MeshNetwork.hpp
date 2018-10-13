@@ -57,6 +57,7 @@ private:
    static const uint16_t PORT;
 
    void receivedCb(NodeId transmitterNodeId, String& msg);
+   void parseShapeStr(String& str, byte ar[], int width);
 
 
 };
