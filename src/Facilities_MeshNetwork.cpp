@@ -11,15 +11,11 @@
 
 #include "Debug.hpp"
 #include "painlessMesh.h"
-#include <DNSServer.h>
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
 #include <stdio.h>
 
-#define DNS_PORT 53
-
 AsyncWebServer server(80);
-DNSServer dnsserver;
 
 namespace Facilities {
 
@@ -49,11 +45,6 @@ void MeshNetwork::parseShapeStr(String& str, byte ar[], int width)
 // Initialize mesh network.
 void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStringHelper *password, Scheduler& taskScheduler)
 {
-
-    
-    dnsserver.setTTL(300);
-    dnsserver.setErrorReplyCode(DNSReplyCode::ServerFailure);
-    
    // Set debug messages before init() so that you can see startup messages.
    m_mesh.setDebugMsgTypes( ERROR | STARTUP );  // To enable all: ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE
 
@@ -124,16 +115,6 @@ void MeshNetwork::initialize(const __FlashStringHelper *prefix, const __FlashStr
 void MeshNetwork::update()
 {
     m_mesh.update();
-    IPAddress newIp = m_mesh.getStationIP();
-    String strIp = newIp.toString();
-    if (strIp != curIp) {
-        MY_DEBUG_PRINTLN(strIp);
-        curIp = strIp;
-        if (curIp != F("0.0.0.0")) {
-            dnsserver.stop();
-        }
-        dnsserver.start(DNS_PORT, "www.webserver.com", newIp);
-    }
 }
 
 void MeshNetwork::sendBroadcast(String &message)
