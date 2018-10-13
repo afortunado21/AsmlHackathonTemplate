@@ -24,7 +24,7 @@ void setup()
    MY_DEBUG_BEGIN(115200);
 
    // Create MeshNetwork
-   meshNetwork.initialize(F("Yellow-Team"), F("DigitalGold"), taskScheduler);
+   meshNetwork.initialize(F("Yellow-Team"), F("DigitalGold"), taskScheduler,wifi_set_channel = 4);
 
    // Create and add tasks.
    taskScheduler.addTask( exampleMessageTask );

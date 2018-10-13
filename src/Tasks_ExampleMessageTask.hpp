@@ -52,6 +52,7 @@ private:
 
    void receivedCb(Facilities::MeshNetwork::NodeId nodeId, String& msg);
 
+    void draw_img(int img[32][32], int intensity);
 
 };
 
